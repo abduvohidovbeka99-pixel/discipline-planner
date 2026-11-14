@@ -1,6 +1,6 @@
 /* ---------- base ---------- */
 *, *::before, *::after { box-sizing: border-box; }
-* { scrollbar-width: thin; scrollbar-color: #3a3c40 transparent; }
+* { scrollbar-width: thin; scrollbar-color: var(--scroll) transparent; }
 
 :root {
   padding-top: var(--safe-top);
@@ -33,10 +33,9 @@ body::before {
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background:
-    linear-gradient(180deg, rgba(20, 17, 27, 0.35) 0%, rgba(20, 17, 27, 0.55) 50%, rgba(20, 17, 27, 0.8) 100%),
-    url('../assets/bg-night.webp') center top / cover no-repeat var(--bg);
+  background: var(--bg-overlay), url('../assets/bg-night.webp') center top / cover no-repeat var(--bg);
 }
+:root[data-bg='off'] .app-bg { background: var(--bg); }
 /* frosted glass for the main surfaces */
 .card, .hero, .qcard, .dock {
   -webkit-backdrop-filter: blur(10px);

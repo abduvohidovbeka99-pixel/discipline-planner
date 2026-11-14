@@ -8,3 +8,25 @@
 .imp-sum { margin: 0 0 12px; padding-left: 18px; color: var(--mut); }
 .imp-sum li { margin: 2px 0; }
 .imp { border-color: var(--acc); }
+.set-label { font-weight: 600; margin-bottom: 2px; }
+
+/* switch rows */
+.sw-row { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 10px 0; background: none; border: 0; border-top: 1px solid var(--line); color: var(--ink); min-height: 56px; }
+.card h2 + .sw-row { border-top: 0; }
+.sw-txt { flex: 1; min-width: 0; }
+.sw-txt b { display: block; font-weight: 600; }
+.sw-txt small { display: block; color: var(--mut); font-size: 12px; }
+.sw { flex: none; width: 50px; height: 30px; border-radius: 15px; background: var(--line); position: relative; transition: background 0.2s; }
+.sw i { position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35); transition: transform 0.2s; }
+.sw.on { background: var(--acc); }
+.sw.on i { transform: translateX(20px); }
+
+/* reset rows */
+.set-reset { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); }
+.card h2 + .set-reset { border-top: 0; }
+.set-reset > div { flex: 1; min-width: 0; }
+.set-reset small { display: block; color: var(--mut); font-size: 12px; }
+.set-reset .nav { flex: none; min-height: 44px; padding: 8px 14px; border-radius: 12px; display: inline-flex; align-items: center; gap: 6px; }
+.set-reset .nav .gl { width: 18px; height: 18px; stroke: currentColor; }
+.danger-btn { color: var(--warn); }
+.nav.danger { background: var(--warn); border-color: var(--warn); color: #fff; }

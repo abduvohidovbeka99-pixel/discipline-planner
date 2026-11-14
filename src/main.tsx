@@ -5,6 +5,9 @@ import './styles/theme.css';
 import './styles/global.css';
 import { App } from './app/App';
 import { registerSW } from 'virtual:pwa-register';
+import { bindSettings } from './store/settings';
+
+bindSettings();
 
 registerSW({ immediate: true });
 

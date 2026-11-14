@@ -36,6 +36,49 @@
 
   --font: 'Roboto Serif Variable', 'Roboto Serif', Georgia, 'Times New Roman', serif;
 
+  --scroll: #3a3c40;
+  --ring-bg: rgba(255, 255, 255, 0.08);
+  --quote-bg: rgba(0, 0, 0, 0.18);
+  --sel-track: rgba(0, 0, 0, 0.22);
+  --bg-overlay: linear-gradient(180deg, rgba(20, 17, 27, 0.35) 0%, rgba(20, 17, 27, 0.55) 50%, rgba(20, 17, 27, 0.8) 100%);
+
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Light theme — same violet accent, light surfaces. */
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --bg: #f4f1fa;
+  --card: rgba(255, 255, 255, 0.82);
+  --card2: rgba(250, 248, 255, 0.86);
+  --card-solid: #ffffff;
+  --ink: #1d1828;
+  --mut: #6b6480;
+  --line: #e2dcee;
+  --acc: #7a5cc4;
+  --accsoft: #ebe4fa;
+  --onacc: #ffffff;
+  --warn: #c9475d;
+  --today: #efe7fd;
+  --gold: #a87a1f;
+
+  --bd: #8a83a3;
+  --bd2: #bdb7cf;
+  --hl: #e25c74;
+  --wt: #6e6788;
+  --wt2: #a9a3bd;
+  --bn: #d9d3e6;
+  --fig-bg: #f6f3fc;
+
+  --final-bg: #fbf2df;
+  --final-ink: #5a4317;
+  --final-line: #e8d3a6;
+
+  --scroll: #cfc8de;
+  --ring-bg: rgba(29, 24, 40, 0.08);
+  --quote-bg: rgba(122, 92, 196, 0.07);
+  --sel-track: rgba(255, 255, 255, 0.35);
+  --bg-overlay: linear-gradient(180deg, rgba(244, 241, 250, 0.55) 0%, rgba(244, 241, 250, 0.75) 50%, rgba(244, 241, 250, 0.9) 100%);
 }

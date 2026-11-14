@@ -1,9 +1,20 @@
 import { useRef, useState } from 'react';
 import { getData, useStore } from '../../store/useStore';
 import { downloadBackup, parseBackup, summarize, type ImportSummary } from '../../store/backup';
-import { SCHEMA_VERSION, STORAGE_KEY } from '../../store/migrations';
+import { initialData, SCHEMA_VERSION, STORAGE_KEY } from '../../store/migrations';
+import { useSettings, type ThemePref } from '../../store/settings';
+import { Tiles, type TileItem } from '../../ui/Tiles';
+import { GLYPHS } from '../../ui/Icons';
+import { Switch } from '../../ui/Switch';
+import { ConfirmButton } from '../../ui/ConfirmButton';
 import type { AppData } from '../../store/types';
 import './settings.css';
+
+const THEMES: TileItem<ThemePref>[] = [
+  { key: 'dark', label: 'Тёмная', icon: GLYPHS.moon },
+  { key: 'light', label: 'Светлая', icon: GLYPHS.sun },
+  { key: 'system', label: 'Как в системе', icon: GLYPHS.auto },
+];
 
 type Pending = { data: AppData; summary: ImportSummary; source: string };
 
@@ -31,6 +42,8 @@ export default function SettingsScreen() {
   const [done, setDone] = useState('');
   const [paste, setPaste] = useState('');
   const [showPaste, setShowPaste] = useState(false);
+  const settings = useSettings();
+  const [resetMsg, setResetMsg] = useState('');
 
   const load = (text: string, source: string) => {
     setDone('');
@@ -46,6 +59,23 @@ export default function SettingsScreen() {
 
   return (
     <>
+      <div className="card">
+        <h2>Оформление</h2>
+        <div className="set-label">Тема</div>
+        <Tiles items={THEMES} value={settings.theme} onChange={(theme) => settings.set({ theme })} />
+        <Switch label="Фоновое фото" hint="Звёздное небо на фоне всех экранов" checked={settings.bgPhoto} onChange={(bgPhoto) => settings.set({ bgPhoto })} />
+      </div>
+
+      <div className="card">
+        <h2>Тренировки</h2>
+        <Switch
+          label="Вибрация после отдыха"
+          hint="Телефон вибрирует, когда таймер отдыха закончился (если устройство поддерживает)"
+          checked={settings.vibrate}
+          onChange={(vibrate) => settings.set({ vibrate })}
+        />
+      </div>
+
       <div className="card">
         <h2>Резервная копия</h2>
         <p className="set-p">
@@ -123,6 +153,40 @@ export default function SettingsScreen() {
           </div>
         </div>
       )}
+
+      <div className="card">
+        <h2>Сброс</h2>
+        <div className="set-reset">
+          <div>
+            <b>Сбросить настройки</b>
+            <small>Тема, фон и вибрация вернутся к значениям по умолчанию. Отметки не затрагиваются.</small>
+          </div>
+          <ConfirmButton className="nav" armClass="danger" confirm="Точно сбросить?" onConfirm={() => {
+              settings.reset();
+              setResetMsg('Настройки сброшены ✓');
+            }}>
+            Сбросить
+          </ConfirmButton>
+        </div>
+        <div className="set-reset">
+          <div>
+            <b>Удалить все данные</b>
+            <small>Привычки, отметки, тренировки, вес, креатин и книги будут удалены безвозвратно. Сначала сделай экспорт!</small>
+          </div>
+          <ConfirmButton
+            className="nav danger-btn"
+            armClass="danger"
+            confirm="Удалить всё?"
+            onConfirm={() => {
+              replaceAll(initialData());
+              setResetMsg('Все данные удалены. Приложение начато с чистого листа.');
+            }}
+          >
+            {GLYPHS.trash} Удалить
+          </ConfirmButton>
+        </div>
+        {resetMsg && <div className="hint" style={{ color: 'var(--acc)' }}>{resetMsg}</div>}
+      </div>
 
       <div className="card">
         <h2>О приложении</h2>

@@ -11,7 +11,7 @@
   border-radius: 18px;
 }
 .hero svg { flex: none; }
-.hero .ring-bg { stroke: rgba(255, 255, 255, 0.08); }
+.hero .ring-bg { stroke: var(--ring-bg); }
 .hero .ring-fg { stroke: var(--acc); transition: stroke-dashoffset 0.6s ease; }
 .hero text { fill: var(--ink); }
 .ht { font-size: 21px; font-weight: 700; }

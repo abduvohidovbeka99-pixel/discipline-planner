@@ -12,7 +12,7 @@
 .wd u { display: block; height: 100%; background: var(--acc); }
 .wd.sel { background: var(--acc); border-color: var(--acc); color: var(--onacc); }
 .wd.sel small { color: inherit; opacity: 0.85; }
-.wd.sel i { background: rgba(0, 0, 0, 0.22); }
+.wd.sel i { background: var(--sel-track); }
 .wd.sel u { background: var(--onacc); }
 .wd.tdy:not(.sel) { border: 2px solid var(--acc); }
 .wd.off { visibility: hidden; }

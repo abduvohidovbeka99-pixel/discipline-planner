@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { FoodCategory } from '../data/foods';
 import { QUOTES, type QuoteCategory } from '../data/quotes';
+import { useSettings } from './settings';
 
 /**
  * Transient UI state (not persisted) — mirrors the prototype's globals
@@ -77,7 +78,7 @@ export const useUi = create<UiState>()((set, get) => ({
       if (left <= 0) {
         clearInterval(restTimer);
         try {
-          navigator.vibrate?.(300);
+          if (useSettings.getState().vibrate) navigator.vibrate?.(300);
         } catch {
           /* vibration unsupported */
         }

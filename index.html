@@ -12,7 +12,17 @@
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <title>Ежедневник — дисциплина</title>
-    <style>html{background:#14111b}</style>
+    <style>html{background:#14111b}html[data-theme="light"]{background:#f4f1fa}</style>
+    <script>
+      // Apply the saved theme before the first paint (no dark→light flash).
+      try {
+        var s = (JSON.parse(localStorage.getItem('discipline-settings') || '{}').state) || {};
+        var t = s.theme === 'light' || (s.theme === 'system' && matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
+        document.documentElement.dataset.theme = t;
+        document.documentElement.dataset.bg = s.bgPhoto === false ? 'off' : 'on';
+        if (t === 'light') document.querySelector('meta[name="theme-color"]').setAttribute('content', '#f4f1fa');
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>
