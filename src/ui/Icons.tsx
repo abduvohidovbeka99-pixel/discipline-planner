@@ -206,9 +206,11 @@ export const CheckMark = () => (
 export const APP_ICONS: Record<AppKey, ReactNode> = {
   home: (
     <svg viewBox="0 0 64 64" aria-hidden="true">
-      <path d="M9 31L32 11l23 20" fill="none" stroke="#4b4663" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M16 29v22a4 4 0 0 0 4 4h24a4 4 0 0 0 4-4V29L32 17z" fill="#4b4663" />
-      <rect x="26" y="37" width="12" height="18" rx="3" fill="#ebe8f5" />
+      <path d="M6 52L24 24l7 10 7-12 20 30z" fill="#a58bdc" />
+      <path d="M24 24l5.5 8-3 1.5-2.5-3-2.5 3-3-1.5z" fill="#ebe6f5" />
+      <path d="M38 22l6.5 10-3.5 1.5-3-3.5-3 3.5-3-1z" fill="#ebe6f5" />
+      <path d="M38 22V9" stroke="#ebe6f5" strokeWidth="2.4" strokeLinecap="round" />
+      <path d="M38 9.5h11l-3 4 3 4H38z" fill="#f3a53b" />
     </svg>
   ),
   tracker: (

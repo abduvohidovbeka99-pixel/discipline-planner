@@ -6,7 +6,7 @@ export const PAL = {
   rewards: ['#f4b93e', '#df8f1e'],
   quotes: ['#8e3fe0', '#f0782e'],
   books: ['#4f95dc', '#2f6fc2'],
-  home: ['#ebebf1', '#c9c9d3'],
+  home: ['#3a2d63', '#14111b'],
 } as const satisfies Record<string, readonly [string, string]>;
 
 export type AppKey = keyof typeof PAL;
