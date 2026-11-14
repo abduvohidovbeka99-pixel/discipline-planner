@@ -47,3 +47,40 @@
 @media (max-width: 640px) {
   .tg { grid-template-columns: 1fr; }
 }
+
+/* ---------- illustrated athlete (main figure) ---------- */
+.fgw.il-panel { background: radial-gradient(120% 90% at 50% 30%, #ffffff 0%, #f1eef6 60%, #e4e0ec 100%); border-color: var(--line); }
+.ill { display: block; width: 100%; max-height: 260px; overflow: visible; }
+.ill path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.ill .il-ol { stroke: #8a5537; }
+.ill .il-skin { stroke: #efb98f; }
+.ill .il-far .il-skin { stroke: #d39a70; }
+.ill .il-far .il-ol { stroke: #774629; }
+.ill .il-hl { stroke: #f8d2b3; stroke-width: 5; opacity: 0.7; }
+.ill .il-abs { stroke: #c4845b; stroke-width: 1.6; }
+.ill .il-mline { stroke: #c98a62; stroke-width: 1.4; }
+.ill .il-shorts { stroke: #2b2d33; }
+.ill .il-far .il-shorts { stroke: #1f2126; }
+.ill .il-stripe { stroke: #22b3be; stroke-width: 5; }
+.ill .il-shoe { stroke: #ffffff; stroke-width: 10; }
+.ill .il-shoe-far { stroke: #e6e6ea; }
+.ill .il-sole { stroke: #9ea3ab; stroke-width: 2.5; }
+.ill .il-headc { fill: #efb98f; stroke: #8a5537; stroke-width: 1.8; }
+.ill .il-hair { fill: #2a1d17; stroke: #2a1d17; stroke-width: 0.8; }
+.ill .il-ear { fill: #e3a77c; }
+.ill .il-hand { fill: #efb98f; stroke: #8a5537; stroke-width: 1.8; }
+.ill .il-far-fill { fill: #d39a70; }
+.ill .il-plate { fill: #2b2d33; stroke: #111; stroke-width: 1; }
+.ill .il-plate2 { fill: #4a4e57; }
+.ill .il-hub { fill: #b9bec6; }
+.ill .il-db-far .il-plate { fill: #1d1f24; }
+.ill .il-shadow { fill: #000; opacity: 0.08; }
+.ill .il-mat { fill: #d8d3e2; }
+.ill .il-metal { stroke: #9aa0a9; stroke-width: 5; }
+.ill .il-bench { stroke: #3a3f48; stroke-width: 12; }
+.ill .il-cable { stroke: #6f7580; stroke-width: 2; }
+.ill .il-glow { stroke: #ff4d4d; stroke-linecap: round; opacity: 0.1; }
+.ill .il-arrow path { stroke: #f3a53b; stroke-width: 4.5; opacity: 0.95; }
+.ill .il-arrow .il-arrow-head { fill: #f3a53b; stroke: #f3a53b; stroke-width: 1.5; }
+.ill .il-ph text { font-size: 12px; font-weight: 700; fill: #6a4fc0; }
+.ill .il-torso { fill: #efb98f; stroke: #8a5537; stroke-width: 1.8; }

@@ -5,6 +5,7 @@ import { useUi } from '../../store/uiStore';
 import { Tile, Tiles } from '../../ui/Tiles';
 import { GLYPHS } from '../../ui/Icons';
 import { ExerciseFigure } from './ExerciseFigure';
+import { ExerciseIllustration } from './ExerciseIllustration';
 import { RestTimer } from './RestTimer';
 import { WeekPlan } from './WeekPlan';
 import { useRepCounter } from './useRepCounter';
@@ -29,8 +30,8 @@ export default function TrainScreen() {
       <Tiles items={PROGRAM_TILES} value={e.id} onChange={(id) => set({ program: id, figIdx: 0 })} />
       <div className="card">
         <div className="tg">
-          <div className="fgw">
-            <ExerciseFigure key={animKey} ref={svg} name={fig[0]} dur={tempo} />
+          <div className="fgw il-panel">
+            <ExerciseIllustration key={animKey} ref={svg} name={fig[0]} dur={tempo} />
           </div>
           <div>
             {e.figs.length > 1 && (
