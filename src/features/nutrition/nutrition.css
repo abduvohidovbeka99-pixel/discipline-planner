@@ -1,0 +1,17 @@
+/* creatine */
+.crs { display: flex; gap: 6px; overflow-x: auto; padding: 4px 0 8px; }
+.crd { flex: none; width: 46px; height: 58px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 0; color: var(--ink); }
+.crd small { color: var(--mut); font-size: 11px; }
+.crd b { font-size: 16px; }
+.crd.on { background: var(--acc); border-color: var(--acc); color: var(--onacc); }
+.crd.on small { color: inherit; }
+.bo { fill: none; stroke: var(--mut); stroke-width: 3; }
+.bl { fill: var(--acc); opacity: 0.85; transition: y 0.3s, height 0.3s; }
+
+/* weight chart */
+.wc { width: 100%; }
+.wc line { stroke: var(--line); stroke-width: 1; }
+.wc line.gl { stroke: var(--gold); stroke-dasharray: 4 4; }
+.wc path { fill: none; stroke: var(--acc); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+.wc circle { fill: var(--acc); }
+.wc text { fill: var(--mut); font-size: 10px; }
