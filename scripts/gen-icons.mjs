@@ -16,7 +16,7 @@ const svg = ({ pad, rounded, bg = true }) => {
   }<g transform="translate(${o} ${o}) scale(${s / 64})">${glyph}</g></svg>`;
 };
 
-writeFileSync('public/favicon.svg', svg({ pad: 0.04, rounded: true }));
+writeFileSync('public/favicon-v2.svg', svg({ pad: 0.04, rounded: true }));
 
 const browser = await chromium.launch();
 const page = await browser.newPage();
@@ -25,9 +25,9 @@ const render = async (file, size, opts) => {
   await page.setContent(`<style>html,body{margin:0;background:transparent}svg{display:block;width:${size}px;height:${size}px}</style>${svg(opts)}`);
   await page.screenshot({ path: 'public/' + file, omitBackground: true });
 };
-await render('pwa-192.png', 192, { pad: 0.06, rounded: true });
-await render('pwa-512.png', 512, { pad: 0.06, rounded: true });
-await render('pwa-maskable-512.png', 512, { pad: 0.17, rounded: false });
-await render('apple-touch-icon.png', 180, { pad: 0.09, rounded: false });
+await render('pwa-192-v2.png', 192, { pad: 0.06, rounded: true });
+await render('pwa-512-v2.png', 512, { pad: 0.06, rounded: true });
+await render('pwa-maskable-512-v2.png', 512, { pad: 0.17, rounded: false });
+await render('apple-touch-icon-v2.png', 180, { pad: 0.09, rounded: false });
 await browser.close();
 console.log('icons written to public/');
