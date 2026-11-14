@@ -6,8 +6,10 @@
   color-scheme: dark;
 
   --bg: #14111b;
-  --card: #1c1826;
-  --card2: #241f31;
+  /* surfaces are slightly translucent so the background photo shows through */
+  --card: rgba(28, 24, 38, 0.8);
+  --card2: rgba(36, 31, 49, 0.84);
+  --card-solid: #1c1826;
   --ink: #ebe6f5;
   --mut: #9a92ad;
   --line: #2f2840;

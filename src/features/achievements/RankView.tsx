@@ -53,7 +53,7 @@ export function RankView() {
           </blockquote>
         ) : (
           <p className="rank-congrats" style={{ marginTop: 14 }}>
-            Отметь первую привычку в этом месяце — и получишь «Бронзу».
+            Набери {rankMinPct(1)}% общего прогресса за месяц — и получишь «Бронзу».
           </p>
         )}
         <div className="hint">Титул считается по общему прогрессу текущего месяца и начинается заново 1-го числа.</div>

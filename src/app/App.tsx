@@ -40,6 +40,7 @@ export function App() {
     <TodayProvider>
       <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, '')}>
         <ScrollTop />
+        <div className="app-bg" aria-hidden="true" />
         <div className="wrap">
           <Routes>
             <Route path="/" element={<div className="screen"><HomeScreen /></div>} />

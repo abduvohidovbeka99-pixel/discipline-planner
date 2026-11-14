@@ -36,7 +36,7 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        globPatterns: ['**/*.{js,css,html,svg,png,webp,woff2}'],
         // Russian UI: precache only Latin + Cyrillic font subsets.
         globIgnores: ['**/*-{greek,greek-ext,vietnamese,math,symbols}-*.woff2'],
         navigateFallback: 'index.html',

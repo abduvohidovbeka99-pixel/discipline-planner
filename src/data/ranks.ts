@@ -1,6 +1,7 @@
 /**
  * Monthly rank ladder. The month's overall progress (0–100%) is split into
- * 7 equal segments of 100/7 ≈ 14.3%; each segment is one rank.
+ * 7 equal segments of 100/7 ≈ 14.3%: the first segment gives no rank, each of
+ * the next six is one rank (Бронза … Алмаз).
  */
 export interface Rank {
   id: string;
@@ -55,18 +56,9 @@ export const RANKS: Rank[] = [
     name: 'Сапфир',
     c1: '#6fa8ff',
     c2: '#1e4fb0',
-    congrats: 'Сапфир! Редкий уровень постоянства — тобой можно гордиться.',
+    congrats: 'Сапфир! Редкий уровень постоянства — до алмаза осталось совсем чуть-чуть.',
     quote: 'Победить себя — первая и лучшая из побед.',
     author: 'Платон',
-  },
-  {
-    id: 'amethyst',
-    name: 'Аметист',
-    c1: '#cf9cff',
-    c2: '#6c3bb8',
-    congrats: 'Аметист! Ты почти на вершине — осталось совсем чуть-чуть до алмаза.',
-    quote: 'Сила не в том, чтобы никогда не падать, а в том, чтобы подниматься каждый раз.',
-    author: 'Конфуций',
   },
   {
     id: 'diamond',

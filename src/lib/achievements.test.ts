@@ -3,28 +3,28 @@ import { achievementText, plural } from '../data/achievements';
 import { habitAchievement, habitTotal, rankHistory, rankIndex, rankMaxPct, rankMinPct } from './achievements';
 
 describe('monthly rank', () => {
-  it('splits 100% into 7 equal segments', () => {
+  it('splits 100% into 7 equal segments, the first one gives no rank', () => {
     expect([0, 1, 14, 15, 28, 29, 42, 43, 57, 58, 71, 72, 85, 86, 95, 100].map(rankIndex)).toEqual([
-      0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 7,
+      0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 6,
     ]);
   });
   it('thresholds shown in the UI match rankIndex', () => {
-    for (let i = 1; i <= 7; i++) {
+    for (let i = 1; i <= 6; i++) {
       expect(rankIndex(rankMinPct(i))).toBe(i);
       expect(rankIndex(rankMaxPct(i))).toBe(i);
     }
-    expect([1, 2, 3, 4, 5, 6, 7].map(rankMinPct)).toEqual([1, 15, 29, 43, 58, 72, 86]);
+    expect([1, 2, 3, 4, 5, 6].map(rankMinPct)).toEqual([15, 29, 43, 58, 72, 86]);
   });
   it('each month gets its own rank, newest first', () => {
     const habits = [{ id: 'a', name: 'A', goal: 10 }];
     const data = {
-      '2026-10': { c: { a: Array.from({ length: 10 }, (_, i) => i + 1) }, mood: {}, mot: {} }, // 100% → Алмаз
-      '2026-11': { c: { a: [1, 2] }, mood: {}, mot: {} }, // 20% → Серебро
+      '2026-10': { c: { a: Array.from({ length: 10 }, (_, i) => i + 1) }, mood: {}, mot: {} }, // 100% → Алмаз (6)
+      '2026-11': { c: { a: [1, 2] }, mood: {}, mot: {} }, // 20% → Бронза (1)
       junk: { c: {}, mood: {}, mot: {} },
     };
     expect(rankHistory(data, habits).map((h) => [h.key, h.pct, h.rank])).toEqual([
-      ['2026-11', 20, 2],
-      ['2026-10', 100, 7],
+      ['2026-11', 20, 1],
+      ['2026-10', 100, 6],
     ]);
   });
 });
