@@ -32,8 +32,12 @@ const dAngle = (from: number, to: number) => {
   return d;
 };
 
-/** Interpolate two poses by rotating bones (lengths are interpolated too). */
-export function blendPose(P: Pose, Q: Pose, u: number): Pose {
+/**
+ * Interpolate two poses by rotating bones (lengths are interpolated too).
+ * Joints listed in `planar` move in a straight line instead (motion across the
+ * viewer, e.g. elbows flaring out in a press, hands fixed on a pull-up bar).
+ */
+export function blendPose(P: Pose, Q: Pose, u: number, planar: Joint[] = []): Pose {
   if (u <= 0) return P;
   if (u >= 1) return Q;
   const out: Pose = {};
@@ -49,7 +53,7 @@ export function blendPose(P: Pose, Q: Pose, u: number): Pose {
     const p1 = Q[par];
     const c1 = Q[ch];
     const base = out[par];
-    if (!p0 || !c0 || !p1 || !c1 || !base) {
+    if (!p0 || !c0 || !p1 || !c1 || !base || planar.includes(ch)) {
       lin(ch);
       continue;
     }
@@ -78,26 +82,30 @@ export const TIMELINE = { hold0: 0.04, go: 0.42, hold1: 0.54, back: 0.97 };
 const STEPS = 14;
 
 /** One movement A → (M) → B sampled with easing. */
-function move(from: Pose, to: Pose, mid: Pose | undefined, t0: number, t1: number): Frame[] {
+function move(from: Pose, to: Pose, mid: Pose | undefined, t0: number, t1: number, planar: Joint[]): Frame[] {
   const out: Frame[] = [];
   for (let i = 1; i <= STEPS; i++) {
     const k = i / STEPS;
     const u = easeInOut(k);
-    const pose = mid ? (u < 0.5 ? blendPose(from, mid, u * 2) : blendPose(mid, to, (u - 0.5) * 2)) : blendPose(from, to, u);
+    const pose = mid
+      ? u < 0.5
+        ? blendPose(from, mid, u * 2, planar)
+        : blendPose(mid, to, (u - 0.5) * 2, planar)
+      : blendPose(from, to, u, planar);
     out.push({ t: t0 + (t1 - t0) * k, pose });
   }
   return out;
 }
 
 /** All frames of one rep (t in 0..1). */
-export function repFrames(A: Pose, B: Pose, M?: Pose): Frame[] {
+export function repFrames(A: Pose, B: Pose, M?: Pose, planar: Joint[] = []): Frame[] {
   const { hold0, go, hold1, back } = TIMELINE;
   return [
     { t: 0, pose: A },
     { t: hold0, pose: A },
-    ...move(A, B, M, hold0, go),
+    ...move(A, B, M, hold0, go, planar),
     { t: hold1, pose: B },
-    ...move(B, A, M, hold1, back),
+    ...move(B, A, M, hold1, back, planar),
     { t: 1, pose: A },
   ];
 }

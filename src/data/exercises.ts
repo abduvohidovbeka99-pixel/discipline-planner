@@ -52,6 +52,12 @@ export interface FigureDef {
   glowRegion: 'tight' | 'wide';
   /** Lift the chin by this many degrees in the illustrated figure (e.g. looking up at the bar). */
   chinUp?: number;
+  /**
+   * Joints that move across the viewer (frontal plane: presses, pull-ups,
+   * face pulls). Seen from the side they travel in a straight line with the
+   * bone foreshortened, so they are interpolated linearly instead of rotated.
+   */
+  planar?: Joint[];
 }
 
 const mp = (b: Pose, o: Pose): Pose => ({ ...b, ...o });
@@ -114,7 +120,7 @@ export const FIGURES: Record<string, FigureDef> = {
     A: { S: [122, 74], H: [122, 128], E: [122, 50], W: [122, 26], K: [124, 152], F: [104, 150], D: [126, 56] },
     B: { S: [120, 36], H: [120, 92], E: [106, 46], W: [122, 26], K: [122, 116], F: [102, 114], D: [124, 14] },
     fo: [-7, -1], fl: [5, -1], hl: [['S', 'H', 0, 0.55, 16], ['S', 'E', 0, 1, 10]], m: 'c1',
-    ph: ['Вверх · выдох', 'Вниз · вдох'], eq: PULL_BAR, glowRegion: 'tight', chinUp: 35,
+    ph: ['Вверх · выдох', 'Вниз · вдох'], eq: PULL_BAR, glowRegion: 'tight', planar: ['E', 'W'], chinUp: 35,
   },
   dips: {
     A: { S: [130, 40], H: [124, 94], E: [129, 62], W: [130, 84], K: [120, 122], F: [100, 124], D: [135, 24] },
@@ -127,13 +133,13 @@ export const FIGURES: Record<string, FigureDef> = {
   cp: {
     A: mp(LY, { E: [62, 69], W: [62, 45] }), B: mp(LY, { E: [54, 97], W: [54, 73] }),
     hl: [['S', 'H', 0, 0.4, 16], ['S', 'E', 0, 1, 9]], m: 'c2', ph: ['Вниз · вдох', 'Жми вверх · выдох'],
-    eq: [...MAT, ...BENCH], wt: true, fw: true, fo: [-4, -3], fl: [5, -1], glowRegion: 'wide',
+    eq: [...MAT, ...BENCH], wt: true, fw: true, fo: [-4, -3], fl: [5, -1], glowRegion: 'wide', planar: ['E'],
   },
   ci: {
     A: mp(LI, { E: [78, 37], W: [80, 13] }), B: mp(LI, { E: [68, 68], W: [68, 44] }),
     hl: [['S', 'H', 0, 0.4, 16], ['S', 'E', 0, 1, 9]], m: 'c2', ph: ['Вниз · вдох', 'Жми вверх · выдох'],
     eq: [...MAT, { t: 'path', cls: 'bn', d: 'M118 110L66 66M116 110H150' }, { t: 'path', cls: 'eq', d: 'M136 116V153M88 90L76 153' }],
-    wt: true, fw: true, fo: [-4, -3], fl: [5, -1], glowRegion: 'wide',
+    wt: true, fw: true, fo: [-4, -3], fl: [5, -1], glowRegion: 'wide', planar: ['E'],
   },
   cpo: {
     A: mp(LY, { E: [65, 70], W: [62, 47] }), B: mp(LY, { E: [41, 81], W: [19, 69] }),
@@ -163,7 +169,7 @@ export const FIGURES: Record<string, FigureDef> = {
   sp: {
     A: mp(ST, { E: [120, 58], W: [118, 34] }), B: mp(ST, { E: [116, 18], W: [115, -6] }),
     hl: [['S', 'E', 0, 0.55, 15]], m: 'c1', ph: ['Жми вверх · выдох', 'Вниз · вдох'],
-    eq: MATV, sc: true, wt: true, fw: true, fo: [-6, 0], fl: [6, 0], glowRegion: 'wide',
+    eq: MATV, sc: true, wt: true, fw: true, fo: [-6, 0], fl: [6, 0], glowRegion: 'wide', planar: ['E'],
   },
   sfr: {
     A: mp(ST, { E: [112, 64], W: [112, 88] }), M: mp(ST, { E: [129, 57], W: [146, 74] }), B: mp(ST, { E: [136, 41], W: [160, 42] }),
@@ -176,7 +182,7 @@ export const FIGURES: Record<string, FigureDef> = {
     B: mp(ST, { E: [120, 48], W: [128, 37], P: [214, 36] }),
     ex: [{ cls: 'cb', joints: ['P', 'W'] }],
     hl: [['S', 'H', 0, 0.3, 14], ['S', 'E', 0, 0.5, 13]], m: 'c1', ph: ['Тяни к лицу · выдох', 'Назад · вдох'],
-    eq: [...MATV, { t: 'path', cls: 'eq', d: 'M214 192V30' }], sc: true, wt: true, wr: 6, fo: [-6, 0], fl: [6, 0], glowRegion: 'wide',
+    eq: [...MATV, { t: 'path', cls: 'eq', d: 'M214 192V30' }], sc: true, wt: true, wr: 6, fo: [-6, 0], fl: [6, 0], glowRegion: 'wide', planar: ['E', 'W'],
   },
   tsk: {
     A: mp(LY, { E: [62, 69], W: [62, 45] }), M: mp(LY, { E: [62, 69], W: [39, 69] }), B: mp(LY, { E: [62, 69], W: [44, 81] }),

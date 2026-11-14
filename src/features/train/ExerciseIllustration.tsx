@@ -364,7 +364,7 @@ export const ExerciseIllustration = forwardRef<SVGSVGElement, Props>(function Ex
   const uid = useId().replace(/:/g, '');
   const d = FIGURES[name];
   const glId = 'ilg' + uid;
-  const frames = repFrames(d.A, d.B, d.M);
+  const frames = repFrames(d.A, d.B, d.M, d.planar);
   const near: Ctx = { dur, frames };
   const shifted = (o: Pt): Ctx => ({ dur, frames: frames.map((f) => ({ t: f.t, pose: shift(f.pose, o) })) });
   const farArm = d.fa

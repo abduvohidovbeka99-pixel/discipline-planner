@@ -15,6 +15,15 @@ describe('motion', () => {
     }
   });
 
+  it('planar joints move in a straight line (hands stay on the pull-up bar)', () => {
+    const { A, B, planar } = FIGURES.pullup;
+    for (const u of [0.25, 0.5, 0.75]) {
+      const p = blendPose(A, B, u, planar);
+      expect(p.W).toEqual([122, 26]);
+      expect(p.E![0]).toBeCloseTo(A.E![0] + (B.E![0] - A.E![0]) * u, 6);
+    }
+  });
+
   it('blend endpoints are the key poses', () => {
     const { A, B } = FIGURES.bc;
     expect(blendPose(A, B, 0)).toBe(A);
