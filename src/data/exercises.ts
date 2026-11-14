@@ -131,12 +131,14 @@ export const FIGURES: Record<string, FigureDef> = {
 
   // ---- weights (legacy FX) ----
   cp: {
-    A: mp(LY, { E: [62, 69], W: [62, 45] }), B: mp(LY, { E: [54, 97], W: [54, 73] }),
+    // Dumbbells lower to mid-chest, elbows drop below the torso line.
+    A: mp(LY, { E: [66, 69], W: [68, 45] }), B: mp(LY, { E: [70, 100], W: [74, 72] }),
     hl: [['S', 'H', 0, 0.4, 16], ['S', 'E', 0, 1, 9]], m: 'c2', ph: ['Вниз · вдох', 'Жми вверх · выдох'],
     eq: [...MAT, ...BENCH], wt: true, fw: true, fo: [-4, -3], fl: [5, -1], glowRegion: 'wide', planar: ['E'],
   },
   ci: {
-    A: mp(LI, { E: [78, 37], W: [80, 13] }), B: mp(LI, { E: [68, 68], W: [68, 44] }),
+    // Dumbbells lower to the upper chest (not the face).
+    A: mp(LI, { E: [84, 37], W: [88, 13] }), B: mp(LI, { E: [86, 80], W: [96, 54] }),
     hl: [['S', 'H', 0, 0.4, 16], ['S', 'E', 0, 1, 9]], m: 'c2', ph: ['Вниз · вдох', 'Жми вверх · выдох'],
     eq: [...MAT, { t: 'path', cls: 'bn', d: 'M118 110L66 66M116 110H150' }, { t: 'path', cls: 'eq', d: 'M136 116V153M88 90L76 153' }],
     wt: true, fw: true, fo: [-4, -3], fl: [5, -1], glowRegion: 'wide', planar: ['E'],

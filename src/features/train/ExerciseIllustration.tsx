@@ -329,14 +329,21 @@ function MotionArrow({ d }: { d: FigureDef }) {
   if (len < 14) return null;
   const a = pt(d.A, best);
   const b = pt(d.B, best);
+  // Default: the side away from the hips; flip it if the arrow would cover the head.
   const h = pt(d.A, 'H');
+  const heads = [pt(d.A, 'D'), pt(d.B, 'D')];
   let n = perp(a, b);
   const mid = lerp(a, b, 0.5);
-  const away = (k: number) => {
+  const fromHip = (k: number) => {
     const q = add(mid, n, k);
     return Math.hypot(q[0] - h[0], q[1] - h[1]);
   };
-  if (away(20) < away(-20)) n = [-n[0], -n[1]];
+  if (fromHip(20) < fromHip(-20)) n = [-n[0], -n[1]];
+  const hitsHead = [0.2, 0.5, 0.8].some((t) => {
+    const q = add(add(lerp(a, b, t), n, 22), n, t === 0.5 ? 14 : 4);
+    return heads.some((o) => Math.hypot(q[0] - o[0], q[1] - o[1]) < 16);
+  });
+  if (hitsHead) n = [-n[0], -n[1]];
   const off = 22;
   const from = add(lerp(a, b, 0.12), n, off);
   const to = add(lerp(a, b, 0.88), n, off);
