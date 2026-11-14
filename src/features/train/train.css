@@ -1,0 +1,49 @@
+.tg { display: grid; grid-template-columns: minmax(220px, 340px) 1fr; gap: 16px; }
+.fgw { background: var(--fig-bg); border: 1px solid var(--line); border-radius: 16px; padding: 10px; }
+
+/* ---------- stick figure ---------- */
+.fg { width: 100%; max-height: 260px; }
+.fg path { fill: none; stroke: var(--acc); stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
+.fg circle { fill: var(--acc); }
+.fg .b { fill: none; stroke: var(--bd); stroke-linecap: round; stroke-linejoin: round; }
+.fg .t { stroke-width: 20; }
+.fg .a { stroke-width: 9; }
+.fg .l { stroke-width: 12; }
+.fg .f { stroke: var(--bd2); }
+.fg circle.h { fill: var(--bd); }
+.fg .g { fill: none; stroke: var(--hl); stroke-linecap: round; stroke-linejoin: round; opacity: 0.15; }
+.fg .eq { fill: none; stroke: var(--mut); stroke-width: 5; stroke-linecap: round; }
+.fg .mat { fill: var(--line); stroke: none; }
+.fg .ph text { font-size: 12px; font-weight: 700; fill: var(--acc); }
+.fg .wt { fill: var(--wt); stroke: #0d0e0f; stroke-width: 1.5; }
+.fg .wt.f { fill: var(--wt2); }
+.fg .bn { fill: none; stroke: var(--bn); stroke-width: 12; stroke-linecap: round; stroke-linejoin: round; }
+.fg .cb { fill: none; stroke: var(--mut); stroke-width: 2.5; stroke-linecap: round; }
+
+/* thumbnail inside a tile icon */
+.ico .fg.th { width: 92%; height: auto; max-height: none; }
+.th .b { stroke: #fff; }
+.th .f { stroke: rgba(255, 255, 255, 0.5); }
+.th circle.h { fill: #fff; }
+.th .g { stroke: #ffe27a; opacity: 0.95; }
+.th .eq, .th .bn, .th .cb { stroke: rgba(255, 255, 255, 0.4); }
+.th .mat { fill: rgba(255, 255, 255, 0.2); }
+.th .wt { fill: #fff; stroke: none; }
+.th .wt.f { fill: rgba(255, 255, 255, 0.55); }
+.th ellipse { display: none; }
+
+/* muscles */
+.mc { display: inline-block; padding: 3px 10px; border-radius: 99px; background: var(--accsoft); font-size: 12px; margin: 0 6px 6px 0; }
+.mc.hot { background: color-mix(in srgb, var(--hl) 22%, transparent); }
+.mc.hot::before { content: '● '; color: var(--hl); }
+
+/* 4-week plan */
+.wkr { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.wkr .tx { flex: 1; min-width: 220px; }
+.sb { width: 34px; height: 34px; margin-right: 4px; border-radius: 50%; border: 2px solid var(--acc); background: transparent; padding: 0; }
+.sb.on { background: var(--acc); color: var(--onacc); }
+.sb.nx { box-shadow: 0 0 0 3px var(--accsoft); }
+
+@media (max-width: 640px) {
+  .tg { grid-template-columns: 1fr; }
+}
