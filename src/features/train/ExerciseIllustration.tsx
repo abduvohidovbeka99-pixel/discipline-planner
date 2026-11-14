@@ -1,17 +1,15 @@
 import { forwardRef, useId, type CSSProperties, type ReactNode } from 'react';
 import { FIGURES, type EqShape, type FigureDef, type Joint, type Pose, type Pt } from '../../data/exercises';
 import { seg, shift } from './figureGeometry';
+import { effortAt, repFrames, type Frame } from './motion';
 
 /**
- * "Illustrated" exercise figure: the same pose data as the stick figure, but
- * drawn as a fitness-poster athlete — skin-tone limbs with outlines, muscle
- * lines, dark shorts with a teal stripe, sneakers, hair, metal dumbbells and an
- * orange motion arrow. Every shape is derived from the joints, so all
- * exercises get the new look automatically and keep their SMIL animation.
+ * "Illustrated" exercise figure: the same pose data as the stick figure, drawn
+ * as a fitness-poster athlete — muscular build with outlines, beard and long
+ * hair, dark shorts with a teal stripe, sneakers, metal dumbbells and an orange
+ * motion arrow. Motion is sampled by `motion.ts` (bone rotation, holds,
+ * easing) and played back as linear SMIL keyframes.
  */
-
-const EASE2 = '.45 0 .55 1;.45 0 .55 1';
-const EASE4 = '.42 0 1 1;0 0 .58 1;.42 0 1 1;0 0 .58 1';
 
 type V = [number, number];
 type PathOf = (p: Pose) => string;
@@ -20,6 +18,7 @@ const r2 = (n: number) => Math.round(n * 100) / 100;
 const pt = (p: Pose, j: Joint): V => [...(p[j] ?? [0, 0])] as V;
 const lerp = (a: V, b: V, t: number): V => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
 const line = (a: V, b: V) => `M${r2(a[0])} ${r2(a[1])}L${r2(b[0])} ${r2(b[1])}`;
+const P = (v: V) => `${r2(v[0])} ${r2(v[1])}`;
 const norm = (v: V): V => {
   const l = Math.hypot(v[0], v[1]) || 1;
   return [v[0] / l, v[1] / l];
@@ -36,55 +35,48 @@ const add = (a: V, b: V, k = 1): V => [a[0] + b[0] * k, a[1] + b[1] * k];
 
 interface Ctx {
   dur: number;
-  A: Pose;
-  B: Pose;
-  M?: Pose;
+  frames: Frame[];
 }
 
-const valuesOf = (a: string, b: string, m?: string) => (m === undefined ? `${a};${b};${a}` : `${a};${m};${b};${m};${a}`);
-const timing = (ctx: Ctx, mid: boolean) => ({
-  keyTimes: mid ? '0;.25;.5;.75;1' : '0;.5;1',
-  dur: ctx.dur + 's',
-  repeatCount: 'indefinite',
-  calcMode: 'spline' as const,
-  keySplines: mid ? EASE4 : EASE2,
-});
+const keyTimes = (ctx: Ctx) => ctx.frames.map((f) => r2(f.t * 1000) / 1000).join(';');
+
+/** Linear keyframe animation built from sampled frames. */
+function Keyframes({ ctx, attr, values, type }: { ctx: Ctx; attr: string; values: string[]; type?: 'translate' | 'rotate' }) {
+  if (values.every((v) => v === values[0])) return null;
+  const common = { values: values.join(';'), keyTimes: keyTimes(ctx), dur: ctx.dur + 's', repeatCount: 'indefinite', calcMode: 'linear' as const };
+  return type ? <animateTransform attributeName="transform" type={type} {...common} /> : <animate attributeName={attr} {...common} />;
+}
 
 /** Path whose geometry follows the pose. */
-function APath({ ctx, f, className, style, filter }: { ctx: Ctx; f: PathOf; className: string; style?: CSSProperties; filter?: string }) {
-  const a = f(ctx.A);
-  const b = f(ctx.B);
-  const m = ctx.M && f(ctx.M);
+function APath({ ctx, f, className, style }: { ctx: Ctx; f: PathOf; className: string; style?: CSSProperties }) {
+  const values = ctx.frames.map((fr) => f(fr.pose));
   return (
-    <path className={className} d={a} style={style} filter={filter}>
-      {a !== b && <animate attributeName="d" values={valuesOf(a, b, m)} {...timing(ctx, !!m)} />}
+    <path className={className} d={values[0]} style={style}>
+      <Keyframes ctx={ctx} attr="d" values={values} />
     </path>
   );
 }
 
-/** Group moved to a joint and rotated by `rot` degrees (head, hand, dumbbell). */
+/** Group moved to a joint and rotated by `rot` degrees (head, hands, feet). */
 function AGroup({ ctx, at, rot, children }: { ctx: Ctx; at: (p: Pose) => V; rot?: (p: Pose) => number; children: ReactNode }) {
-  const tr = (p: Pose) => `${r2(at(p)[0])} ${r2(at(p)[1])}`;
-  const a = tr(ctx.A);
-  const b = tr(ctx.B);
-  const m = ctx.M && tr(ctx.M);
-  const ra = rot ? r2(rot(ctx.A)) : 0;
-  let rb = rot ? r2(rot(ctx.B)) : 0;
-  let rm = rot && ctx.M ? r2(rot(ctx.M)) : undefined;
-  // avoid spinning the long way round
-  if (rb - ra > 180) rb -= 360;
-  if (ra - rb > 180) rb += 360;
-  if (rm !== undefined) {
-    if (rm - ra > 180) rm -= 360;
-    if (ra - rm > 180) rm += 360;
-  }
+  const tr = ctx.frames.map((fr) => P(at(fr.pose)));
+  // unwrap the angle so the head never spins the long way round
+  const angles: number[] = [];
+  if (rot)
+    ctx.frames.forEach((fr, i) => {
+      let a = rot(fr.pose);
+      if (i) {
+        while (a - angles[i - 1] > 180) a -= 360;
+        while (angles[i - 1] - a > 180) a += 360;
+      }
+      angles.push(a);
+    });
+  const rv = angles.map((a) => String(r2(a)));
   return (
-    <g transform={`translate(${a})`}>
-      {a !== b && <animateTransform attributeName="transform" type="translate" values={valuesOf(a, b, m)} {...timing(ctx, !!m)} />}
-      <g transform={`rotate(${ra})`}>
-        {rot && ra !== rb && (
-          <animateTransform attributeName="transform" type="rotate" values={valuesOf(String(ra), String(rb), rm === undefined ? undefined : String(rm))} {...timing(ctx, !!m)} />
-        )}
+    <g transform={`translate(${tr[0]})`}>
+      <Keyframes ctx={ctx} attr="transform" type="translate" values={tr} />
+      <g transform={rot ? `rotate(${rv[0]})` : undefined}>
+        {rot && <Keyframes ctx={ctx} attr="transform" type="rotate" values={rv} />}
         {children}
       </g>
     </g>
@@ -95,59 +87,93 @@ function AGroup({ ctx, at, rot, children }: { ctx: Ctx; at: (p: Pose) => V; rot?
 /* Body parts                                                          */
 /* ------------------------------------------------------------------ */
 
+/** A stroke between two points along a bone (fractions), with width. */
 interface Seg {
   a: Joint;
   b: Joint;
+  from?: number;
+  to?: number;
   w: number;
 }
 
+const OUTLINE = 4;
+
+/** Muscular arm: deltoid cap, biceps bulge, forearm bulge. */
 const ARM: Seg[] = [
   { a: 'S', b: 'E', w: 15 },
-  { a: 'E', b: 'W', w: 11 },
+  { a: 'S', b: 'E', from: 0.28, to: 0.68, w: 19 },
+  { a: 'E', b: 'W', w: 11.5 },
+  { a: 'E', b: 'W', from: 0.08, to: 0.45, w: 14.5 },
+  { a: 'S', b: 'E', from: 0, to: 0.12, w: 22 },
 ];
+/** Heavy legs: quads and calves. */
 const LEG: Seg[] = [
-  { a: 'H', b: 'K', w: 21 },
-  { a: 'K', b: 'F', w: 14 },
+  { a: 'H', b: 'K', w: 22 },
+  { a: 'H', b: 'K', from: 0.25, to: 0.7, w: 25 },
+  { a: 'K', b: 'F', w: 13 },
+  { a: 'K', b: 'F', from: 0.12, to: 0.45, w: 17 },
 ];
 
-/** Outlined tapered limb: dark outline pass, then skin pass. */
+const segPath = (s: Seg): PathOf => (p) => {
+  const a = pt(p, s.a);
+  const b = pt(p, s.b);
+  return line(lerp(a, b, s.from ?? 0), lerp(a, b, s.to ?? 1));
+};
+
+/** Outlined limb: all outlines first, then all skin passes (clean silhouette). */
 function Limb({ ctx, segs, far }: { ctx: Ctx; segs: Seg[]; far?: boolean }) {
   return (
     <g className={far ? 'il-far' : undefined}>
-      {segs.map((s) => (
-        <APath key={'o' + s.a + s.b} ctx={ctx} className="il-ol" style={{ strokeWidth: s.w + 3.5 }} f={(p) => line(pt(p, s.a), pt(p, s.b))} />
+      {segs.map((s, i) => (
+        <APath key={'o' + i} ctx={ctx} className="il-ol" style={{ strokeWidth: s.w + OUTLINE }} f={segPath(s)} />
       ))}
-      {segs.map((s) => (
-        <APath key={'s' + s.a + s.b} ctx={ctx} className="il-skin" style={{ strokeWidth: s.w }} f={(p) => line(pt(p, s.a), pt(p, s.b))} />
+      {segs.map((s, i) => (
+        <APath key={'s' + i} ctx={ctx} className="il-skin" style={{ strokeWidth: s.w }} f={segPath(s)} />
       ))}
     </g>
   );
 }
 
-/** Muscle definition lines on the upper arm and forearm. */
+/** Muscle definition on the near arm: deltoid split and biceps line. */
 function ArmLines({ ctx }: { ctx: Ctx }) {
-  const biceps: PathOf = (p) => {
+  const f: PathOf = (p) => {
     const s = pt(p, 'S');
     const e = pt(p, 'E');
+    const w = pt(p, 'W');
     const n = perp(s, e);
-    return line(add(lerp(s, e, 0.3), n, 3.2), add(lerp(s, e, 0.82), n, 3.2));
+    const n2 = perp(e, w);
+    const delt = `M${P(add(lerp(s, e, 0.05), n, -9))}Q${P(add(lerp(s, e, 0.22), n, -2))} ${P(add(lerp(s, e, 0.16), n, 8))}`;
+    const bi = line(add(lerp(s, e, 0.32), n, 4.5), add(lerp(s, e, 0.78), n, 4));
+    const fore = line(add(lerp(e, w, 0.12), n2, 3), add(lerp(e, w, 0.55), n2, 2));
+    return delt + bi + fore;
   };
-  return <APath ctx={ctx} className="il-mline" f={biceps} />;
+  return <APath ctx={ctx} className="il-mline" f={f} />;
+}
+
+/** Quad and calf lines on the near leg. */
+function LegLines({ ctx }: { ctx: Ctx }) {
+  const f: PathOf = (p) => {
+    const k = pt(p, 'K');
+    const ft = pt(p, 'F');
+    const n = perp(k, ft);
+    return line(add(lerp(k, ft, 0.15), n, -4), add(lerp(k, ft, 0.5), n, -3));
+  };
+  return <APath ctx={ctx} className="il-mline" f={f} />;
 }
 
 /** Shorts on a thigh (+ teal side stripe). */
 function ShortsLeg({ ctx, far }: { ctx: Ctx; far?: boolean }) {
-  const thigh: PathOf = (p) => line(pt(p, 'H'), lerp(pt(p, 'H'), pt(p, 'K'), 0.48));
+  const thigh: PathOf = (p) => line(pt(p, 'H'), lerp(pt(p, 'H'), pt(p, 'K'), 0.5));
   const stripe: PathOf = (p) => {
     const h = pt(p, 'H');
     const k = pt(p, 'K');
     const n = perp(h, k);
-    return line(add(lerp(h, k, 0.05), n, 6.5), add(lerp(h, k, 0.45), n, 6.5));
+    return line(add(lerp(h, k, 0.05), n, 7.5), add(lerp(h, k, 0.46), n, 7.5));
   };
   return (
     <g className={far ? 'il-far' : undefined}>
-      <APath ctx={ctx} className="il-ol" style={{ strokeWidth: 26.5 }} f={thigh} />
-      <APath ctx={ctx} className="il-shorts" style={{ strokeWidth: 23 }} f={thigh} />
+      <APath ctx={ctx} className="il-ol" style={{ strokeWidth: 30 }} f={thigh} />
+      <APath ctx={ctx} className="il-shorts" style={{ strokeWidth: 26 }} f={thigh} />
       {!far && <APath ctx={ctx} className="il-stripe" f={stripe} />}
     </g>
   );
@@ -163,8 +189,8 @@ function Shoe({ ctx, dir, far }: { ctx: Ctx; dir: number; far?: boolean }) {
 }
 
 /**
- * Torso as a filled silhouette. In all pose data the chest faces
- * `-perp(S→H)`, so we can shape a chest/abs profile on the front side.
+ * Torso as a filled silhouette with a broad chest and traps. In all pose data
+ * the chest faces `-perp(S→H)`.
  */
 function Torso({ ctx }: { ctx: Ctx }) {
   const frame = (p: Pose) => {
@@ -178,31 +204,29 @@ function Torso({ ctx }: { ctx: Ctx }) {
   };
   const body: PathOf = (p) => {
     const { S, H, d, back, front, at } = frame(p);
-    const P = (v: V) => `${r2(v[0])} ${r2(v[1])}`;
-    const b0 = add(S, back, 13);
-    const b1 = at(0.55, back, 11);
-    const b2 = add(H, back, 12.5);
-    const f2 = add(H, front, 12);
-    const f1 = at(0.58, front, 13.5);
-    const f0 = at(0.2, front, 18);
-    const top = add(S, front, 9);
+    const b0 = add(add(S, back, 14), d, -2);
+    const b1 = at(0.55, back, 12);
+    const b2 = add(H, back, 13);
+    const f2 = add(H, front, 12.5);
+    const f1 = at(0.6, front, 14);
+    const f0 = at(0.22, front, 20.5);
+    const top = add(S, front, 10);
     return (
-      `M${P(b0)}Q${P(at(0.3, back, 14))} ${P(b1)}Q${P(at(0.85, back, 11))} ${P(b2)}` +
-      `Q${P(add(H, d, 11))} ${P(f2)}Q${P(at(0.8, front, 12))} ${P(f1)}Q${P(at(0.38, front, 18.5))} ${P(f0)}` +
-      `Q${P(add(S, front, 16))} ${P(top)}Q${P(add(S, d, -12))} ${P(b0)}Z`
+      `M${P(b0)}Q${P(at(0.3, back, 16))} ${P(b1)}Q${P(at(0.85, back, 11.5))} ${P(b2)}` +
+      `Q${P(add(H, d, 11))} ${P(f2)}Q${P(at(0.82, front, 12.5))} ${P(f1)}Q${P(at(0.4, front, 21))} ${P(f0)}` +
+      `Q${P(add(S, front, 19))} ${P(top)}Q${P(add(S, d, -15))} ${P(b0)}Z`
     );
   };
   const lines: PathOf = (p) => {
     const { front, at } = frame(p);
-    const P = (v: V) => `${r2(v[0])} ${r2(v[1])}`;
-    // pec line + three side ab notches
-    const pec = `M${P(at(0.36, front, 15))}Q${P(at(0.4, front, 8))} ${P(at(0.3, front, 3))}`;
-    const ab = (t: number) => `M${P(at(t, front, 12.5))}L${P(at(t, front, 7.5))}`;
-    return pec + ab(0.5) + ab(0.62) + ab(0.74);
+    const pec = `M${P(at(0.4, front, 17))}Q${P(at(0.44, front, 8))} ${P(at(0.3, front, 2))}`;
+    const ab = (t: number) => `M${P(at(t, front, 13))}Q${P(at(t + 0.02, front, 10))} ${P(at(t, front, 7))}`;
+    const lat = `M${P(at(0.25, front, -2))}Q${P(at(0.45, front, -6))} ${P(at(0.62, front, -10))}`;
+    return pec + ab(0.54) + ab(0.65) + ab(0.76) + lat;
   };
   const shine: PathOf = (p) => {
     const { back, at } = frame(p);
-    return line(at(0.15, back, 7), at(0.6, back, 6));
+    return line(at(0.14, back, 8), at(0.58, back, 7));
   };
   const hips: PathOf = (p) => line(lerp(pt(p, 'S'), pt(p, 'H'), 0.8), pt(p, 'H'));
   return (
@@ -210,11 +234,21 @@ function Torso({ ctx }: { ctx: Ctx }) {
       <APath ctx={ctx} className="il-torso" f={body} />
       <APath ctx={ctx} className="il-hl" f={shine} />
       <APath ctx={ctx} className="il-abs" f={lines} />
-      <APath ctx={ctx} className="il-ol" style={{ strokeWidth: 30 }} f={hips} />
-      <APath ctx={ctx} className="il-shorts" style={{ strokeWidth: 26.5 }} f={hips} />
+      <APath ctx={ctx} className="il-ol" style={{ strokeWidth: 31 }} f={hips} />
+      <APath ctx={ctx} className="il-shorts" style={{ strokeWidth: 27 }} f={hips} />
     </>
   );
 }
+
+/*
+ * Head drawn in local coordinates: facing +x, "up" is -y.
+ * Long hair parted on top: one side falls back to the nape, the other forms a
+ * fringe over the forehead. Full beard with moustache, profile nose, brow.
+ */
+const HAIR =
+  'M-10.2 13.2C-14.4 4-13.4-10.4-2-14.8C6.2-17 12.8-12.4 13.2-5.4C10.8-7.6 7.2-8.7 3.6-8.6C-1-8.5-4.6-6.9-6-3.4C-7.2 0-7 6.2-5.8 12.6C-7.3 13.8-8.9 13.9-10.2 13.2Z';
+const HAIR_STRANDS = 'M-1.8-14.6C-7.2-12.6-10.8-6.6-10.8 3.5M-1.8-14.6C3.8-15.2 9.6-12 12-6.4M-5-12.8C-9-8.6-9.6-1.5-8.6 9M2.6-14.6C7-13.4 10.4-10.4 11.6-6.8';
+const BEARD = 'M-3.4 5C-1.2 8.8 3.2 10.2 7.2 8.8C9.6 7.9 10.9 5.6 11.3 3C11.9 7 11 11 7.4 13.2C3.4 15.4-2 14.4-4.6 10.8C-5.4 9.2-5.2 7-3.4 5Z';
 
 function Head({ ctx, dir }: { ctx: Ctx; dir: number }) {
   // Head "up" follows the neck direction (S → D).
@@ -223,15 +257,24 @@ function Head({ ctx, dir }: { ctx: Ctx; dir: number }) {
     const d = pt(p, 'D');
     return (Math.atan2(d[1] - s[1], d[0] - s[0]) * 180) / Math.PI + 90;
   };
+  const neck: PathOf = (p) => line(pt(p, 'S'), lerp(pt(p, 'S'), pt(p, 'D'), 0.62));
   return (
     <>
-      <APath ctx={ctx} className="il-ol" style={{ strokeWidth: 14.5 }} f={(p) => line(pt(p, 'S'), lerp(pt(p, 'S'), pt(p, 'D'), 0.6))} />
-      <APath ctx={ctx} className="il-skin" style={{ strokeWidth: 11 }} f={(p) => line(pt(p, 'S'), lerp(pt(p, 'S'), pt(p, 'D'), 0.6))} />
+      <APath ctx={ctx} className="il-ol" style={{ strokeWidth: 18 }} f={neck} />
+      <APath ctx={ctx} className="il-skin" style={{ strokeWidth: 14 }} f={neck} />
       <AGroup ctx={ctx} at={(p) => pt(p, 'D')} rot={rot}>
         <g transform={dir < 0 ? 'scale(-1 1)' : undefined}>
-          <ellipse className="il-headc" cx="0" cy="0" rx="10.5" ry="12" />
-          <path className="il-hair" d="M-10.8 1.5C-12.2-7-7.5-13.2 0.5-13.4C6.5-13.5 10.8-10 11.2-5.5C7.5-8.2 2.5-8.6-1.5-7.2C-5.2-6-6.8-2.8-6.8 1.2C-8.4 0.6-9.6 0.8-10.8 1.5Z" />
-          <ellipse className="il-ear" cx="-2.5" cy="1" rx="2.2" ry="3" />
+          <g transform="scale(1.06)">
+            <path className="il-nose" d="M10.6-2.2L13.6 2.4L10.8 3.2" />
+            <ellipse className="il-headc" cx="0.5" cy="0" rx="10.8" ry="12.4" />
+            <path className="il-beard" d={BEARD} />
+            <path className="il-stache" d="M6 4C8 3.1 10.2 3.1 11.6 4.3" />
+            <path className="il-brow" d="M6.2-3.4L11-2.6" />
+            <ellipse className="il-eye" cx="8.6" cy="-0.6" rx="0.9" ry="1.1" />
+            <path className="il-hair" d={HAIR} />
+            <path className="il-strand" d={HAIR_STRANDS} />
+            <ellipse className="il-ear" cx="-2.8" cy="1.5" rx="2.3" ry="3.1" />
+          </g>
         </g>
       </AGroup>
     </>
@@ -243,12 +286,12 @@ function Hand({ ctx, far, weight, r }: { ctx: Ctx; far?: boolean; weight?: boole
     <AGroup ctx={ctx} at={(p) => pt(p, 'W')}>
       {weight ? (
         <g className={far ? 'il-db il-db-far' : 'il-db'}>
-          <circle r={r + 3} className="il-plate" />
-          <circle r={r - 1} className="il-plate2" />
-          <circle r={2.4} className="il-hub" />
+          <circle r={r + 3.5} className="il-plate" />
+          <circle r={r} className="il-plate2" />
+          <circle r={2.6} className="il-hub" />
         </g>
       ) : (
-        <circle r={6} className={'il-hand' + (far ? ' il-far-fill' : '')} />
+        <circle r={6.5} className={'il-hand' + (far ? ' il-far-fill' : '')} />
       )}
     </AGroup>
   );
@@ -273,20 +316,17 @@ function Equipment({ shapes }: { shapes: EqShape[] }) {
 
 /** Orange curved arrow showing the direction of the first phase. */
 function MotionArrow({ d }: { d: FigureDef }) {
-  const cands: Joint[] = ['W', 'D', 'F', 'K'];
   let best: Joint = 'W';
-  let dist = 0;
-  for (const j of cands) {
+  let len = 0;
+  for (const j of ['W', 'D', 'F', 'K'] as Joint[]) {
     if (!d.A[j] || !d.B[j]) continue;
-    const a = pt(d.A, j);
-    const b = pt(d.B, j);
-    const l = Math.hypot(b[0] - a[0], b[1] - a[1]);
-    if (l > dist) {
-      dist = l;
+    const l = Math.hypot(pt(d.B, j)[0] - pt(d.A, j)[0], pt(d.B, j)[1] - pt(d.A, j)[1]);
+    if (l > len) {
+      len = l;
       best = j;
     }
   }
-  if (dist < 14) return null;
+  if (len < 14) return null;
   const a = pt(d.A, best);
   const b = pt(d.B, best);
   const h = pt(d.A, 'H');
@@ -297,17 +337,17 @@ function MotionArrow({ d }: { d: FigureDef }) {
     return Math.hypot(q[0] - h[0], q[1] - h[1]);
   };
   if (away(20) < away(-20)) n = [-n[0], -n[1]];
-  const off = 20;
+  const off = 22;
   const from = add(lerp(a, b, 0.12), n, off);
   const to = add(lerp(a, b, 0.88), n, off);
   const ctrl = add(mid, n, off + 14);
   const t = norm([to[0] - ctrl[0], to[1] - ctrl[1]]);
   const tn: V = [-t[1], t[0]];
   const tip = add(to, t, 6);
-  const head = `M${r2(tip[0])} ${r2(tip[1])}L${r2(to[0] - t[0] * 6 + tn[0] * 6.5)} ${r2(to[1] - t[1] * 6 + tn[1] * 6.5)}L${r2(to[0] - t[0] * 6 - tn[0] * 6.5)} ${r2(to[1] - t[1] * 6 - tn[1] * 6.5)}Z`;
+  const head = `M${P(tip)}L${P(add(add(to, t, -6), tn, 6.5))}L${P(add(add(to, t, -6), tn, -6.5))}Z`;
   return (
     <g className="il-arrow">
-      <path d={`M${r2(from[0])} ${r2(from[1])}Q${r2(ctrl[0])} ${r2(ctrl[1])} ${r2(to[0])} ${r2(to[1])}`} />
+      <path d={`M${P(from)}Q${P(ctrl)} ${P(to)}`} />
       <path className="il-arrow-head" d={head} />
     </g>
   );
@@ -324,30 +364,32 @@ export const ExerciseIllustration = forwardRef<SVGSVGElement, Props>(function Ex
   const uid = useId().replace(/:/g, '');
   const d = FIGURES[name];
   const glId = 'ilg' + uid;
-  const near: Ctx = { dur, A: d.A, B: d.B, M: d.M };
-  const sh = (o: Pt) => (p?: Pose) => p && shift(p, o);
-  const fa = sh(d.fo);
-  const fl = sh(d.fl);
-  const farArm: Ctx = { dur, A: fa(d.A)!, B: fa(d.B)!, M: fa(d.M) };
-  const farLeg: Ctx = { dur, A: fl(d.A)!, B: fl(d.B)!, M: fl(d.M) };
+  const frames = repFrames(d.A, d.B, d.M);
+  const near: Ctx = { dur, frames };
+  const shifted = (o: Pt): Ctx => ({ dur, frames: frames.map((f) => ({ t: f.t, pose: shift(f.pose, o) })) });
+  const farArm = d.fa
+    ? { dur, frames: frames.map((f) => ({ t: f.t, pose: { S: d.fa![0], E: d.fa![1], W: d.fa![2] } as Pose })) }
+    : shifted(d.fo);
+  const farLeg = shifted(d.fl);
   const s = pt(d.A, 'S');
   const dh = pt(d.A, 'D');
   const dir = Math.abs(dh[0] - s[0]) < 2 ? 1 : Math.sign(dh[0] - s[0]);
   const wr = d.wr ?? 8;
-  const staticFarArm: Ctx | null = d.fa ? { dur, A: { S: d.fa[0], E: d.fa[1], W: d.fa[2] }, B: { S: d.fa[0], E: d.fa[1], W: d.fa[2] } } : null;
+  const kt = keyTimes(near);
 
   const body = (
     <>
       <Equipment shapes={d.eq} />
       {/* far side */}
-      <Limb ctx={staticFarArm ?? farArm} segs={ARM} far />
-      <Hand ctx={staticFarArm ?? farArm} far weight={!!d.fw} r={wr} />
+      <Limb ctx={farArm} segs={ARM} far />
+      <Hand ctx={farArm} far weight={!!d.fw} r={wr} />
       <Limb ctx={farLeg} segs={LEG} far />
       <ShortsLeg ctx={farLeg} far />
       <Shoe ctx={farLeg} dir={dir} far />
       {/* body */}
       <Torso ctx={near} />
       <Limb ctx={near} segs={LEG} />
+      <LegLines ctx={near} />
       <ShortsLeg ctx={near} />
       <Shoe ctx={near} dir={dir} />
       <Head ctx={near} dir={dir} />
@@ -361,14 +403,12 @@ export const ExerciseIllustration = forwardRef<SVGSVGElement, Props>(function Ex
       {/* working muscles */}
       {d.hl.map((h, i) => {
         const f = seg(h[0], h[1], h[2], h[3]);
+        const values = frames.map((fr) => f(fr.pose));
+        const op = frames.map((fr) => r2(0.06 + 0.5 * effortAt(fr.t, d.m === 'c2')));
         return (
-          <path key={i} className="il-glow" filter={`url(#${glId})`} style={{ strokeWidth: h[4] + 'px' }} d={f(d.A)}>
-            <animate attributeName="d" values={valuesOf(f(d.A), f(d.B), d.M && f(d.M))} {...timing(near, !!d.M)} />
-            {d.m === 'c2' ? (
-              <animate attributeName="opacity" values=".1;.3;.75;.1" keyTimes="0;.5;.8;1" dur={dur + 's'} repeatCount="indefinite" />
-            ) : (
-              <animate attributeName="opacity" values=".1;.75;.1" keyTimes="0;.5;1" dur={dur + 's'} repeatCount="indefinite" />
-            )}
+          <path key={i} className="il-glow" filter={`url(#${glId})`} style={{ strokeWidth: h[4] + 2 + 'px' }} d={values[0]}>
+            <Keyframes ctx={near} attr="d" values={values} />
+            <animate attributeName="opacity" values={op.join(';')} keyTimes={kt} dur={dur + 's'} repeatCount="indefinite" />
           </path>
         );
       })}
