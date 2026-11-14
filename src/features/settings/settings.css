@@ -1,0 +1,10 @@
+.set-p { margin: 0 0 10px; }
+.set-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.set-row .nav { min-height: 44px; padding: 8px 14px; border-radius: 12px; }
+.set-paste { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.set-paste textarea { width: 100%; font-size: 13px; resize: vertical; }
+.set-paste .nav { align-self: flex-start; }
+.set-paste .nav:disabled { opacity: 0.5; cursor: default; }
+.imp-sum { margin: 0 0 12px; padding-left: 18px; color: var(--mut); }
+.imp-sum li { margin: 2px 0; }
+.imp { border-color: var(--acc); }

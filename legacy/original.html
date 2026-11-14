@@ -301,6 +301,7 @@ h1{display:none}
 .th .wt.f{fill:rgba(255,255,255,.55)}
 .th ellipse{display:none}
 @media(max-width:640px){.dk small{font-size:8.5px}.ico.xs{width:34px;height:34px}}
+#exp{display:block;margin:4px auto 0;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px 14px;font-size:12px;color:var(--mut)}body:not([data-v="home"]) #exp{display:none}
 </style>
 </head>
 <body>
@@ -313,6 +314,7 @@ h1{display:none}
     <button class="nav" data-a="now">Сегодня</button>
   </div>
   <div id="app"></div>
+  <button id="exp" type="button">⬇ Экспорт данных</button>
   <div class="hint">Нажимайте на клетки, чтобы отметить день. Данные сохраняются в этом браузере.</div>
 </div>
 <script>
@@ -727,6 +729,13 @@ document.addEventListener('change',e=>{
   if(e.target.dataset.a==='goal'){const x=S.habits.find(v=>v.id===e.target.dataset.h);if(x){x.goal=Math.max(0,+e.target.value||0);save();render()}}
 });
 render();
+</script>
+<script>
+// Export button: saves the `habit-tracker-v1` data as a JSON file for the new app.
+document.getElementById('exp').addEventListener('click',async()=>{const t=localStorage.getItem(KEY)||JSON.stringify(S),n='discipline-backup-'+iso(new Date())+'.json',f=new File([t],n,{type:'application/json'});
+if(navigator.canShare&&navigator.canShare({files:[f]})&&matchMedia('(pointer:coarse)').matches){try{await navigator.share({files:[f]});return}catch(e){if(e.name==='AbortError')return}}
+const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=n;document.body.appendChild(a);a.click();a.remove();
+try{await navigator.clipboard.writeText(t)}catch(e){}});
 </script>
 </body>
 </html>
