@@ -344,6 +344,7 @@ function MotionArrow({ d }: { d: FigureDef }) {
     return heads.some((o) => Math.hypot(q[0] - o[0], q[1] - o[1]) < 16);
   });
   if (hitsHead) n = [-n[0], -n[1]];
+  if (d.arrowFlip) n = [-n[0], -n[1]];
   const off = 22;
   const from = add(lerp(a, b, 0.12), n, off);
   const to = add(lerp(a, b, 0.88), n, off);

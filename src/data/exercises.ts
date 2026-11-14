@@ -58,6 +58,8 @@ export interface FigureDef {
    * bone foreshortened, so they are interpolated linearly instead of rotated.
    */
   planar?: Joint[];
+  /** Put the motion arrow on the other side of the moving joint. */
+  arrowFlip?: boolean;
 }
 
 const mp = (b: Pose, o: Pose): Pose => ({ ...b, ...o });
@@ -73,9 +75,10 @@ const MATV: EqShape[] = [
 ];
 const FLOOR_LOW: EqShape = { t: 'rect', x: 10, y: 160, w: 220, h: 6, rx: 3 };
 const PULL_BAR: EqShape[] = [
-  FLOOR_LOW,
-  { t: 'path', cls: 'eq', d: 'M46 160V26M198 160V26' },
-  { t: 'path', cls: 'eq', d: 'M46 26H198', sw: 7 },
+  { t: 'ellipse', cx: 120, cy: 208, rx: 120, ry: 5, opacity: 0.12 },
+  { t: 'rect', x: -50, y: 204, w: 340, h: 12, rx: 6 },
+  { t: 'path', cls: 'eq', d: 'M92 204V12M176 204V12' },
+  { t: 'path', cls: 'eq', d: 'M86 12H182', sw: 7 },
 ];
 const DIP_BARS: EqShape[] = [FLOOR_LOW, { t: 'path', cls: 'eq', d: 'M92 84H176M92 160V84M176 160V84' }];
 const BENCH: EqShape[] = [
@@ -117,10 +120,13 @@ export const FIGURES: Record<string, FigureDef> = {
     ph: ['Напряги кор', 'Дыши ровно'], eq: MAT, glowRegion: 'tight',
   },
   pullup: {
-    A: { S: [122, 74], H: [122, 128], E: [122, 50], W: [122, 26], K: [124, 152], F: [104, 150], D: [126, 56] },
-    B: { S: [120, 36], H: [120, 92], E: [106, 46], W: [122, 26], K: [122, 116], F: [102, 114], D: [124, 14] },
+    // Scaled scene (like standing exercises): high bar, free hang with slightly
+    // bent knees; at the top the chin clears the bar with the face in front of it
+    // and the elbows driven down.
+    A: { W: [122, 12], E: [122, 36], S: [122, 60], D: [128, 43], H: [121, 120], K: [126, 162], F: [114, 196] },
+    B: { W: [122, 12], E: [113, 31], S: [127, 25], D: [132, 2], H: [123, 85], K: [127, 127], F: [115, 161] },
     fo: [-7, -1], fl: [5, -1], hl: [['S', 'H', 0, 0.55, 16], ['S', 'E', 0, 1, 10]], m: 'c1',
-    ph: ['Вверх · выдох', 'Вниз · вдох'], eq: PULL_BAR, glowRegion: 'tight', planar: ['E', 'W'], chinUp: 35,
+    ph: ['Вверх · выдох', 'Вниз · вдох'], eq: PULL_BAR, sc: true, glowRegion: 'tight', planar: ['E', 'W'], chinUp: 20, arrowFlip: true,
   },
   dips: {
     A: { S: [130, 40], H: [124, 94], E: [129, 62], W: [130, 84], K: [120, 122], F: [100, 124], D: [135, 24] },

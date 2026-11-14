@@ -19,7 +19,7 @@ describe('motion', () => {
     const { A, B, planar } = FIGURES.pullup;
     for (const u of [0.25, 0.5, 0.75]) {
       const p = blendPose(A, B, u, planar);
-      expect(p.W).toEqual([122, 26]);
+      expect(p.W).toEqual(A.W);
       expect(p.E![0]).toBeCloseTo(A.E![0] + (B.E![0] - A.E![0]) * u, 6);
     }
   });
