@@ -1,0 +1,52 @@
+.ms { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; }
+.mile { border: 1px solid var(--line); border-radius: 16px; padding: 16px; background: var(--card); opacity: 0.55; transition: 0.3s; }
+.mile.on { opacity: 1; border-color: var(--acc); }
+.mile ul { margin: 8px 0 0; padding-left: 18px; }
+.mile li { margin: 5px 0; }
+.mile .pc { font-size: 30px; font-weight: 800; color: var(--acc); }
+.mile.final { grid-column: 1 / -1; background: var(--final-bg); color: var(--final-ink); border-color: var(--final-line); }
+.mile.final .pc { color: var(--gold); }
+
+/* ---------- monthly rank ---------- */
+.rank-hero {
+  --r1: #3a3350;
+  --r2: #241f31;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--r2) 30%, var(--card2)), var(--card) 70%);
+  border-color: color-mix(in srgb, var(--r1) 45%, var(--line));
+}
+.rank-top { display: flex; align-items: center; gap: 16px; }
+.rank-top .gem { flex: none; filter: drop-shadow(0 6px 14px color-mix(in srgb, var(--r2) 60%, transparent)); }
+.rank-info { display: flex; flex-direction: column; min-width: 0; }
+.rank-info small { color: var(--mut); font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; }
+.rank-name { font-size: 30px; font-weight: 800; line-height: 1.15; color: var(--r1); }
+.rank-quote { margin: 16px 0 0; padding: 12px 14px; border-left: 3px solid var(--r1); background: rgba(0, 0, 0, 0.18); border-radius: 0 12px 12px 0; }
+.rank-quote p { margin: 0; }
+.rank-congrats { font-weight: 600; }
+.rank-q { margin-top: 8px !important; font-size: 17px; line-height: 1.4; }
+.rank-quote cite { display: block; margin-top: 6px; color: var(--mut); font-style: normal; font-size: 13px; }
+
+.gem.locked { filter: grayscale(1) brightness(0.55); opacity: 0.6; }
+
+.rank-row { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.rank-row:last-child { border-bottom: 0; }
+.rank-row.lock .fi b { color: var(--mut); }
+.rank-row.cur { background: var(--accsoft); margin: 0 -8px; padding: 8px; border-radius: 12px; border-bottom-color: transparent; }
+.rank-st { flex: none; font-size: 13px; color: var(--mut); min-width: 48px; text-align: right; }
+.rank-row.cur .rank-st { color: var(--acc); font-weight: 700; }
+.rank-row.done .rank-st { color: var(--acc); }
+
+/* ---------- habit achievements ---------- */
+.lvls { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin: 6px 0 12px; }
+.lvl { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.lvl small { font-size: 11px; color: var(--mut); }
+.lvb { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 14px; border: 2px solid var(--line); background: var(--bg); color: var(--mut); }
+.lvl.on .lvb { background: linear-gradient(165deg, #ffd86b, #c28a14); border-color: transparent; color: #2a1a00; box-shadow: inset 0 2px 2px rgba(255, 255, 255, 0.4); }
+.lvl.on small { color: var(--ink); }
+.lvl.nx .lvb { border-color: var(--acc); color: var(--acc); }
+.ach-next { display: flex; flex-direction: column; gap: 6px; }
+.ach-line { display: flex; justify-content: space-between; gap: 10px; font-size: 14px; }
+.ach-line b { flex: none; color: var(--acc); }
+.ach-done { color: var(--gold); font-weight: 600; font-size: 14px; }
+.ach-got { list-style: none; margin: 10px 0 0; padding: 10px 0 0; border-top: 1px solid var(--line); font-size: 12px; color: var(--mut); }
+.ach-got li { margin: 2px 0; }
+.ach-next .bar { flex: none; }

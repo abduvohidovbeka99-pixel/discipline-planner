@@ -148,6 +148,18 @@ export const GLYPHS = {
       <path d="M12 9.5v4.5l3 2M9.5 3h5" />
     </G>
   ),
+  gem: (
+    <G>
+      <path d="M6 9.5L9 5h6l3 4.5L12 20z" />
+      <path d="M6 9.5h12M9 5l1.5 4.5L12 20l1.5-10.5L15 5" />
+    </G>
+  ),
+  medal: (
+    <G>
+      <circle cx="12" cy="15" r="5.5" />
+      <path d="M8.5 3.5l2.2 6.2M15.5 3.5l-2.2 6.2M12 12.6v4.8" />
+    </G>
+  ),
   gear: (
     <G>
       <circle cx="12" cy="12" r="3" />

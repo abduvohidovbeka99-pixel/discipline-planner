@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { APPS, type AppDef } from '../../data/apps';
-import { MILESTONES } from '../../data/milestones';
+import { RANKS } from '../../data/ranks';
+import { rankIndex } from '../../lib/achievements';
 import { BOOKS } from '../../data/books';
 import { useStore, type Store } from '../../store/useStore';
 import { useOverallProgress } from '../../app/hooks';
@@ -28,7 +29,7 @@ function appInfo(key: AppDef['key'], s: Store, t: Today, pct: number): [number, 
       return [0, w.length ? rn(w[w.length - 1].v) + ' кг' : 'Добавь вес'];
     }
     case 'rewards':
-      return [0, 'Открыто ' + MILESTONES.filter((m) => pct >= m.pct).length + ' из ' + MILESTONES.length];
+      return [0, rankIndex(pct) ? 'Титул: ' + RANKS[rankIndex(pct) - 1].name : 'Без титула'];
     case 'quotes':
       return [0, 'Цитаты дня'];
     case 'books':

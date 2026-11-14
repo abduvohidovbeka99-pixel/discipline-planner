@@ -1,8 +1,8 @@
 import { MILESTONES } from '../../data/milestones';
 import { useOverallProgress } from '../../app/hooks';
-import './rewards.css';
 
-export default function RewardsScreen() {
+/** The original 25/50/75/100% milestones of the current month. */
+export function MilestonesView() {
   const p = useOverallProgress();
   const next = MILESTONES.find((m) => m.pct > p);
   return (

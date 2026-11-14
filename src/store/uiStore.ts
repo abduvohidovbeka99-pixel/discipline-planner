@@ -10,6 +10,7 @@ import { QUOTES, type QuoteCategory } from '../data/quotes';
 
 export type TrackerView = 'day' | 'cal' | 'hab' | 'tbl';
 export type NutView = 'food' | 'plan' | 'cr' | 'w';
+export type AchView = 'rank' | 'habits' | 'stages';
 
 interface UiState {
   /** Month shown in the tracker (null = follow the current month). */
@@ -21,6 +22,8 @@ interface UiState {
   nutView: NutView;
   foodCat: FoodCategory;
   portion: number;
+
+  achView: AchView;
 
   quoteCat: QuoteCategory;
   /** Index within the filtered list (starts at a random quote). */
@@ -49,6 +52,8 @@ export const useUi = create<UiState>()((set, get) => ({
   nutView: 'food',
   foodCat: 'Все',
   portion: 100,
+
+  achView: 'rank',
 
   quoteCat: 'Все',
   quoteIdx: Math.floor(Math.random() * QUOTES.length),

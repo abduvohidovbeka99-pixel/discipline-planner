@@ -11,7 +11,7 @@ export const APPS: AppDef[] = [
   { key: 'tracker', title: 'Трекер', path: '/tracker' },
   { key: 'train', title: 'Тренировки', path: '/train' },
   { key: 'nut', title: 'Питание', path: '/nut' },
-  { key: 'rewards', title: 'Награды', path: '/rewards' },
+  { key: 'rewards', title: 'Достижения', path: '/achievements' },
   { key: 'quotes', title: 'Мотивация', path: '/quotes' },
   { key: 'books', title: 'Книги', path: '/books' },
 ];

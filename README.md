@@ -85,13 +85,14 @@ src/
   app/            App.tsx (роутинг), today.tsx (дата, которая обновляется в полночь), hooks.ts
   store/          types.ts, useStore.ts (zustand + persist), uiStore.ts (несохраняемое состояние экранов),
                   migrations.ts, storage.ts (адаптер хранилища), backup.ts (экспорт/импорт)
-  data/           habits, exercises (программы + позы фигур), foods, mealPlan, quotes, books, milestones, palette, apps
+  data/           ranks (титулы и цитаты), achievements (уровни), habits, exercises (программы + позы фигур), foods, mealPlan, quotes, books, milestones, palette, apps
   features/
     home/         HomeScreen, ProgressRing
     tracker/      DayView, MonthView, HabitsView, TableView, MonthNav, MoodRow, AddHabit
     train/        TrainScreen, ExerciseFigure (SVG + SMIL), RestTimer, WeekPlan, useRepCounter
     nutrition/    FoodsView, PlanView, CreatineView, WeightView, WeightChart
-    rewards/ quotes/ books/ settings/
+    achievements/ RankView (титулы месяца), HabitAchievementsView (уровни привычек), MilestonesView
+    quotes/ books/ settings/
   ui/             AppIcon, Tiles, Dock, Bar, ConfirmButton, NumberField, ScreenHeader, Icons (глифы и иконки)
   lib/            dates.ts, format.ts, calc.ts (проценты, серии, калории, прогноз набора, креатин, вес)
   styles/         theme.css (CSS-переменные темы), global.css
@@ -116,7 +117,7 @@ scripts/gen-icons.mjs  генерация PWA-иконок из SVG (Playwright)
 - Нет генерации HTML строками и `innerHTML`: только компоненты. Таблица рендерится только в виде «Таблица», дублирующиеся `tabs()` и `change`-слушатели убраны.
 - «Сегодня» обновляется в полночь и при возвращении в приложение.
 - id SVG-фильтров уникальные (`useId`), миниатюры упражнений строятся тем же компонентом в статичном режиме.
-- Общий прогресс на главной и в наградах всегда считается за **текущий месяц**, а не за месяц, открытый в трекере.
+- Общий прогресс на главной и в достижениях всегда считается за **текущий месяц**, а не за месяц, открытый в трекере.
 - Счётчик повторов и пауза больше не сбрасываются при отметке подхода или смене нагрузки, только при смене упражнения или темпа.
 - Карточки «По неделям» в таблице: в оригинале CSS-правило `.wk div` ломало полоски прогресса, теперь они видны.
 - Числовые поля применяют значение по Enter или при уходе с поля (как событие `change` в оригинале).
