@@ -1,0 +1,8 @@
+.ms { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; }
+.mile { border: 1px solid var(--line); border-radius: 16px; padding: 16px; background: var(--card); opacity: 0.55; transition: 0.3s; }
+.mile.on { opacity: 1; border-color: var(--acc); }
+.mile ul { margin: 8px 0 0; padding-left: 18px; }
+.mile li { margin: 5px 0; }
+.mile .pc { font-size: 30px; font-weight: 800; color: var(--acc); }
+.mile.final { grid-column: 1 / -1; background: var(--final-bg); color: var(--final-ink); border-color: var(--final-line); }
+.mile.final .pc { color: var(--gold); }

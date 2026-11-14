@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import type { FoodCategory } from '../data/foods';
-import type { QuoteCategory } from '../data/quotes';
+import { QUOTES, type QuoteCategory } from '../data/quotes';
 
 /**
  * Transient UI state (not persisted) — mirrors the prototype's globals
@@ -23,7 +23,7 @@ interface UiState {
   portion: number;
 
   quoteCat: QuoteCategory;
-  /** Index within the filtered list; -1 = pick a random one. */
+  /** Index within the filtered list (starts at a random quote). */
   quoteIdx: number;
 
   program: string;
@@ -51,7 +51,7 @@ export const useUi = create<UiState>()((set, get) => ({
   portion: 100,
 
   quoteCat: 'Все',
-  quoteIdx: -1,
+  quoteIdx: Math.floor(Math.random() * QUOTES.length),
 
   program: 'pu',
   figIdx: 0,
