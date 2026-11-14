@@ -45,11 +45,6 @@ export function HomeScreen() {
   return (
     <>
       <div className="apph">
-        <AppIcon app="home" size="s" />
-        <div>
-          <b>Главное</b>
-          <small className="sub">Ежедневник — дисциплина</small>
-        </div>
         <span className="spacer" />
         <Link to="/settings" className="iconbtn" aria-label="Настройки">
           {GLYPHS.gear}

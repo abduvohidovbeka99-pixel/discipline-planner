@@ -15,5 +15,3 @@ export const APPS: AppDef[] = [
   { key: 'quotes', title: 'Мотивация', path: '/quotes' },
   { key: 'books', title: 'Книги', path: '/books' },
 ];
-
-export const HOME_APP = { key: 'home' as const, title: 'Главное', path: '/' };
