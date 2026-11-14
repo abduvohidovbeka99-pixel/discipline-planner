@@ -243,19 +243,20 @@ function Torso({ ctx }: { ctx: Ctx }) {
 /*
  * Head drawn in local coordinates: facing +x, "up" is -y.
  * Long hair parted on top: one side falls back to the nape, the other forms a
- * fringe over the forehead. Full beard with moustache, profile nose, brow.
+ * fringe over the forehead. Full beard (no moustache), profile nose, brow.
  */
 const HAIR =
   'M-10.2 13.2C-14.4 4-13.4-10.4-2-14.8C6.2-17 12.8-12.4 13.2-5.4C10.8-7.6 7.2-8.7 3.6-8.6C-1-8.5-4.6-6.9-6-3.4C-7.2 0-7 6.2-5.8 12.6C-7.3 13.8-8.9 13.9-10.2 13.2Z';
 const HAIR_STRANDS = 'M-1.8-14.6C-7.2-12.6-10.8-6.6-10.8 3.5M-1.8-14.6C3.8-15.2 9.6-12 12-6.4M-5-12.8C-9-8.6-9.6-1.5-8.6 9M2.6-14.6C7-13.4 10.4-10.4 11.6-6.8';
 const BEARD = 'M-3.4 5C-1.2 8.8 3.2 10.2 7.2 8.8C9.6 7.9 10.9 5.6 11.3 3C11.9 7 11 11 7.4 13.2C3.4 15.4-2 14.4-4.6 10.8C-5.4 9.2-5.2 7-3.4 5Z';
 
-function Head({ ctx, dir }: { ctx: Ctx; dir: number }) {
+/** `mirror` flips the face to the other side; `tilt` adds a constant rotation (chin up). */
+function Head({ ctx, mirror, tilt = 0 }: { ctx: Ctx; mirror: boolean; tilt?: number }) {
   // Head "up" follows the neck direction (S → D).
   const rot = (p: Pose) => {
     const s = pt(p, 'S');
     const d = pt(p, 'D');
-    return (Math.atan2(d[1] - s[1], d[0] - s[0]) * 180) / Math.PI + 90;
+    return (Math.atan2(d[1] - s[1], d[0] - s[0]) * 180) / Math.PI + 90 + tilt;
   };
   const neck: PathOf = (p) => line(pt(p, 'S'), lerp(pt(p, 'S'), pt(p, 'D'), 0.62));
   return (
@@ -263,12 +264,11 @@ function Head({ ctx, dir }: { ctx: Ctx; dir: number }) {
       <APath ctx={ctx} className="il-ol" style={{ strokeWidth: 18 }} f={neck} />
       <APath ctx={ctx} className="il-skin" style={{ strokeWidth: 14 }} f={neck} />
       <AGroup ctx={ctx} at={(p) => pt(p, 'D')} rot={rot}>
-        <g transform={dir < 0 ? 'scale(-1 1)' : undefined}>
+        <g transform={mirror ? 'scale(-1 1)' : undefined}>
           <g transform="scale(1.06)">
             <path className="il-nose" d="M10.6-2.2L13.6 2.4L10.8 3.2" />
             <ellipse className="il-headc" cx="0.5" cy="0" rx="10.8" ry="12.4" />
             <path className="il-beard" d={BEARD} />
-            <path className="il-stache" d="M6 4C8 3.1 10.2 3.1 11.6 4.3" />
             <path className="il-brow" d="M6.2-3.4L11-2.6" />
             <ellipse className="il-eye" cx="8.6" cy="-0.6" rx="0.9" ry="1.1" />
             <path className="il-hair" d={HAIR} />
@@ -373,7 +373,16 @@ export const ExerciseIllustration = forwardRef<SVGSVGElement, Props>(function Ex
   const farLeg = shifted(d.fl);
   const s = pt(d.A, 'S');
   const dh = pt(d.A, 'D');
-  const dir = Math.abs(dh[0] - s[0]) < 2 ? 1 : Math.sign(dh[0] - s[0]);
+  // The chest faces -perp(S→H) in all pose data; the face looks the same way.
+  const hip = pt(d.A, 'H');
+  const td = norm([hip[0] - s[0], hip[1] - s[1]]);
+  const front: V = [td[1], -td[0]];
+  const up = norm([dh[0] - s[0], dh[1] - s[1]]);
+  const mirror = -up[1] * front[0] + up[0] * front[1] < 0;
+  const tilt = d.chinUp ? (mirror ? d.chinUp : -d.chinUp) : 0;
+  // Toes point forward when upright, away from the head when lying down.
+  const upright = Math.abs(td[1]) > 0.7;
+  const dir = upright ? (front[0] < 0 ? -1 : 1) : hip[0] - s[0] < 0 ? -1 : 1;
   const wr = d.wr ?? 8;
   const kt = keyTimes(near);
 
@@ -392,7 +401,7 @@ export const ExerciseIllustration = forwardRef<SVGSVGElement, Props>(function Ex
       <LegLines ctx={near} />
       <ShortsLeg ctx={near} />
       <Shoe ctx={near} dir={dir} />
-      <Head ctx={near} dir={dir} />
+      <Head ctx={near} mirror={mirror} tilt={tilt} />
       {d.ex?.map((e, i) => (
         <APath key={i} ctx={near} className="il-cable" f={(p) => line(pt(p, e.joints[0]), pt(p, e.joints[1]))} />
       ))}

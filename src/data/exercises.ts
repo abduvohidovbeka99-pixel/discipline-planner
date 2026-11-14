@@ -50,6 +50,8 @@ export interface FigureDef {
   sc?: boolean;
   /** Blur filter region for glows: 'tight' (legacy figures) or 'wide'. */
   glowRegion: 'tight' | 'wide';
+  /** Lift the chin by this many degrees in the illustrated figure (e.g. looking up at the bar). */
+  chinUp?: number;
 }
 
 const mp = (b: Pose, o: Pose): Pose => ({ ...b, ...o });
@@ -112,7 +114,7 @@ export const FIGURES: Record<string, FigureDef> = {
     A: { S: [122, 74], H: [122, 128], E: [122, 50], W: [122, 26], K: [124, 152], F: [104, 150], D: [126, 56] },
     B: { S: [120, 36], H: [120, 92], E: [106, 46], W: [122, 26], K: [122, 116], F: [102, 114], D: [124, 14] },
     fo: [-7, -1], fl: [5, -1], hl: [['S', 'H', 0, 0.55, 16], ['S', 'E', 0, 1, 10]], m: 'c1',
-    ph: ['Вверх · выдох', 'Вниз · вдох'], eq: PULL_BAR, glowRegion: 'tight',
+    ph: ['Вверх · выдох', 'Вниз · вдох'], eq: PULL_BAR, glowRegion: 'tight', chinUp: 35,
   },
   dips: {
     A: { S: [130, 40], H: [124, 94], E: [129, 62], W: [130, 84], K: [120, 122], F: [100, 124], D: [135, 24] },
