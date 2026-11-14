@@ -1,0 +1,39 @@
+/*
+ * Design tokens — the final values of the prototype's last `:root:root:root`
+ * block (dark violet theme). Everything else references these variables.
+ */
+:root {
+  color-scheme: dark;
+
+  --bg: #14111b;
+  --card: #1c1826;
+  --card2: #241f31;
+  --ink: #ebe6f5;
+  --mut: #9a92ad;
+  --line: #2f2840;
+  --acc: #a58bdc;
+  --accsoft: #2b2342;
+  --onacc: #150f22;
+  --warn: #e07b8c;
+  --today: #2d2540;
+  --gold: #d8b46a;
+
+  /* exercise figures */
+  --bd: #9a92b3;
+  --bd2: #615a7a;
+  --hl: #f08797;
+  --wt: #b4abca;
+  --wt2: #766e8e;
+  --bn: #352d49;
+  --fig-bg: #171222;
+
+  /* final reward card */
+  --final-bg: #2a2232;
+  --final-ink: #ecd9a8;
+  --final-line: #5a4a33;
+
+  --font: 'Roboto Serif Variable', 'Roboto Serif', Georgia, 'Times New Roman', serif;
+
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
